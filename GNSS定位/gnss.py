@@ -85,7 +85,7 @@ def parse_gnss_data(args):
 
 def gnss_data():
     global lat, lng , altitude, speed, direction, time
-    # print("Initializing GNSS...")
+    print("Initializing GNSS...")
     if quecgnss.init() != 0:
         print("GNSS init failed!")
         return
@@ -94,7 +94,7 @@ def gnss_data():
     #     print("Failed to enable GNSS!")
     #     return
 
-    # print("GNSS enabled. Waiting for fix...")
+    print("GNSS enabled. Waiting for fix...")
 
     while True:
         raw = quecgnss.read(4096)
@@ -143,3 +143,5 @@ def gnss_data():
             print("Failed to parse coordinates.")
         utime.sleep(3)
 
+if __name__ == '__main__':
+    gnss_data()
