@@ -1,4 +1,4 @@
-# 初学者视角的试用：【C4-PO1 开发板】初阶 “智能药箱” 项目开发
+# 趣味进阶体验：让【C4-PO1开发板】成为智能药盒！
 
 本文介绍基于 C4-PO1 开发板实现 “智能药箱” 的项目设计，包含定时开盖、外部中断关盖、音频播报（可选扩展）等核心功能，帮助初学者快速上手基于 QuecPython 的智能硬件开发。
 
@@ -8,7 +8,7 @@
 
 1. 定时触发：每秒检测系统时间，当秒数为 1 时自动打开药盒（PWM 驱动执行器）；
 
-2. 外部中断：通过 GPIO17 下降沿触发中断，关闭药盒；
+2. 外部中断：通过 GPIO20 下降沿触发中断，关闭药盒；
 
 3. 可扩展音频播报（基于 QuecPython audio 模块）：如开盖 / 关盖语音提示、定时服药提醒等；
 
@@ -19,51 +19,34 @@
 ## 核心代码讲解
 
 ```python
-# 初始化PWM（驱动药箱开关执行器）
-pwm = PWM_V2(PWM_V2.PWM0, 100.0, 15)
-# 初始化音频模块（可选：用于语音播报）
-aud = audio.Audio(0)
-Pin(Pin.GPIO10, Pin.OUT, Pin.PULL_DISABLE, 1)  # PA使能
-
-aud.setVolume(8)  # 设置播报音量
-
-# 播放提示音/语音（可选扩展）
-def play_audio(url):
-    try:
-        import request
-        resp = request.get(url)
-        for data in resp.content:
-            aud.playStream(3, data.encode())
-        aud.stopPlayStream()
-    except Exception as e:
-        print(f"音频播放失败：{e}")
-
-# 打开药盒（PWM驱动+语音提示）
+pwm=PWM_V2(PWM_V2.PWM0, 100.0, 15)
+aud = audio.Audio(2)
+Pin(Pin.GPIO10,Pin.OUT,Pin.PULL_DISABLE,1)
 def test():
     print("已打开药盒")
-    pwm.open(100.0, 5)
-    # 可选：播放“药盒已打开”语音（替换为实际音频URL）
-    # _thread.start_new_thread(play_audio, ("https://xxx/box_open.mp3",))
+    pwm.open(100.0,5)
+    aud.play(2, 1, 'U:/music.mp3')
 
-# 实时打印时间+定时触发开盖
+    
 def print_time():
     while True:
-        tupe_t = utime.localtime()
-        current_time = "%04d-%02d-%02d %02d:%02d:%02d" % (tupe_t[0], tupe_t[1], tupe_t[2], tupe_t[3], tupe_t[4], tupe_t[5])
-        print("当前时间：", current_time)
-        # 每秒检测，当秒数为1时触发开盖
-        if tupe_t[5] == 1:
+        tupe_t=utime.localtime()
+        print("当前时间：%04d-%02d-%02d %02d:%02d:%02d" % (tupe_t[0], tupe_t[1], tupe_t[2], tupe_t[3], tupe_t[4], tupe_t[5]))
+        if tupe_t[5]==1:
             test()
         utime.sleep(1)
-
-# 外部中断回调：关闭药盒
+        
 def func(args):
     print("外部中断触发，关闭药盒")
-    pwm.open(100.0, 15)
-    # 可选：播放“药盒已关闭”语音（替换为实际音频URL）
-    # _thread.start_new_thread(play_audio, ("https://xxx/box_close.mp3",))
+    pwm.open(100.0,15)
 
 
+if __name__ == "__main__":
+    ext_int=ExtInt(ExtInt.GPIO20, ExtInt.IRQ_FALLING, ExtInt.PULL_PU, func,filter_time=50)
+    thread=_thread.start_new_thread(print_time, ())
+    ext_int.enable()
+    while True:
+        utime.sleep(1)
 ```
 
 ## 代码说明
