@@ -5,10 +5,13 @@ import utime
 import _thread
 
 pwm=PWM_V2(PWM_V2.PWM0, 100.0, 15)
-
+aud = audio.Audio(2)
+Pin(Pin.GPIO10,Pin.OUT,Pin.PULL_DISABLE,1)
 def test():
     print("已打开药盒")
     pwm.open(100.0,5)
+    aud.play(2, 1, 'U:/music.mp3')
+
     
 def print_time():
     while True:
@@ -24,7 +27,7 @@ def func(args):
 
 
 if __name__ == "__main__":
-    ext_int=ExtInt(ExtInt.GPIO17, ExtInt.IRQ_FALLING, ExtInt.PULL_PU, func,filter_time=50)
+    ext_int=ExtInt(ExtInt.GPIO20, ExtInt.IRQ_FALLING, ExtInt.PULL_PU, func,filter_time=50)
     thread=_thread.start_new_thread(print_time, ())
     ext_int.enable()
     while True:
