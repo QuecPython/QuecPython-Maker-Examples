@@ -18,7 +18,7 @@ def LED_SW(num):
     else:
         LED.write(1)
         print("led on")
-        
+
 if __name__=='__main__':
     LED=Pin(22,Pin.OUT,Pin.PULL_DISABLE,0)
     adc = ADC()
