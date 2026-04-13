@@ -7,7 +7,7 @@ import utime
 外接喇叭播放，参数选择0
 '''
 
-pa_enable_pin = Pin(Pin.GPIO29, Pin.OUT, Pin.PULL_DISABLE, 1)
+pa_enable_pin = Pin(Pin.GPIO33, Pin.OUT, Pin.PULL_DISABLE, 1)
 pa_enable_pin.write(1)
 
 rec = audio.Record(0)

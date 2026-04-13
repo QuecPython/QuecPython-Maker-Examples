@@ -4,7 +4,7 @@ import _thread
 from machine import Pin
 
 aud=audio.Audio(0)
-Pin(Pin.GPIO29, Pin.OUT, Pin.PULL_DISABLE, 1)  # PA使能
+Pin(Pin.GPIO39, Pin.OUT, Pin.PULL_DISABLE, 1)  # PA使能
 aud.setVolume(5)
 
 url="https://euai-media.acceleronix.io/hls/music/jp03.mp3"
